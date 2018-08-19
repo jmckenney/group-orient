@@ -8,10 +8,14 @@ body {
 
 .phone {
   background-color: #000;
-  width: 200px;
-  height: 400px;
+  background-size: cover;
+  float: left;
+  margin: 1vw;
+  width: 20vw;
+  height: calc(20vw * 1.8);
   border-radius: 30px;
   position: relative;
+  transition: all 100
 }
 
 .phone:after {

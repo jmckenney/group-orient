@@ -1,21 +1,52 @@
 document.addEventListener('DOMContentLoaded', function () {
     let database = firebase.database();
     let provider = new firebase.auth.GoogleAuthProvider();
+    window.phoneElements = {};
 
-    firebase.auth().signInWithPopup(provider).then(function (result) {
-        window.fbuser = result.user;
-        initDbWriter();
+    firebase.auth().getRedirectResult().then(function (result) {
+        debugger;
+        if (result.credential) {
+            var token = result.credential.accessToken;
+            window.fbuser = result.user;
+            database.ref('users/' + window.fbuser.uid).set({
+                gamma: 0,
+                photo: ""
+            });
+            addPhonesToPage();
+            initDbWriter();
+        } else {
+            firebase.auth().signInWithRedirect(provider);
+        }
+        // The signed-in user info.
+        var user = result.user;
+    }).catch(function (error) {
+        debugger;
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
     });
+
+
+    // firebase.auth().signInWithPopup(provider).then(function (result) {
+    // });
 
     const initDbListener = function () {
         database.ref().on("value", function (snapshot) {
-            console.log(snapshot.val().users);
-            gamma = snapshot.val().gamma;
-            // phone.style.transform =
-            //     "rotateZ(1deg) " +
-            //     "rotateX(45deg) " +
-            //     "rotateY(" + (gamma) + "deg) " +
-            //     "skew(-3deg)";
+            // debugger;
+            let userOrientations = snapshot.val().users;
+            for (var key in userOrientations) {
+                window.phoneElements[key].style.transform =
+                    "rotateZ(1deg) " +
+                    "rotateX(45deg) " +
+                    "rotateY(" + (userOrientations[key].gamma) + "deg) " +
+                    "skew(-3deg)";
+                window.phoneElements[key].style.backgroundImage = "url('" + userOrientations[key].photo + "')";
+            }
         }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
@@ -23,9 +54,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const initDbWriter = function () {
         window.addEventListener("deviceorientation", function (event) {
-            database.ref('users/' + window.fbuser.uid).set({
-                gamma: event.gamma
-            });
+            // debugger;
+            if (window.fbuser.uid) {
+                database.ref('users/' + window.fbuser.uid).set({
+                    gamma: event.gamma,
+                    photo: window.fbuser.photoURL
+                });
+            }
         });
     }
 
@@ -37,10 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 newDiv.classList.add("phone");
                 newDiv.setAttribute("id", key);
                 document.body.appendChild(newDiv);
+                window.phoneElements[key] = newDiv;
             }
             initDbListener();
         });
     }
 
-    addPhonesToPage();
 });
