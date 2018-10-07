@@ -1,0 +1,25 @@
+{
+  "name": "group-orient",
+  "version": "1.0.0",
+  "description": "A social peer pressure experiment",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmckenney/group-orient.git"
+  },
+  "author": "jmckenney",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmckenney/group-orient/issues"
+  },
+  "homepage": "https://github.com/jmckenney/group-orient#readme"
+}
