@@ -5,11 +5,12 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
+    "jest": "^23.6.0",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "webpack --config webpack.config.js"
   },
   "repository": {
