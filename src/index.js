@@ -1,28 +1,9 @@
 import auth from './auth.js';
+import Phone from './phone.js';
 
 var phones = {};
 
 let user;
-
-export const createPhoneElement = function(key) {
-    let newDiv = document.createElement("div");
-    newDiv.classList.add("phone");
-    newDiv.setAttribute("id", key);
-    return newDiv;
-}
-
-export const createPhone = (element) => {
-    return {
-        rotate: function(gamma) {
-            this.element.style.transform =
-            "rotateZ(1deg) " +
-            "rotateX(45deg) " +
-            "rotateY(" + (gamma) + "deg) " +
-            "skew(-3deg)";
-        },
-        element: element
-    }
-};
 
 const onChangeHandler = function (snapshot) {
     let userOrientations = snapshot.val().users;
@@ -58,9 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const users = snapshot.val();
             for (var key in users) {
                 if (!users.hasOwnProperty(key)) continue;
-                let newPhone = createPhoneElement(key);
+                let newPhone = Phone.createPhoneElement(key);
                 document.body.appendChild(newPhone);
-                phones[key] = createPhone(newPhone);
+                phones[key] = Phone.createPhone(newPhone);
             }
 
             dbChangeHandler();
@@ -69,5 +50,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
     addPhonesToPage();
 });
-
-export default {createPhoneElement, createPhone};
