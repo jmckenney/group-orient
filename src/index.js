@@ -1,74 +1,73 @@
-
 import auth from './auth.js';
+
+var phones = {};
+
+let user;
+
+export const createPhoneElement = function(key) {
+    let newDiv = document.createElement("div");
+    newDiv.classList.add("phone");
+    newDiv.setAttribute("id", key);
+    return newDiv;
+}
+
+export const createPhone = (element) => {
+    return {
+        rotate: function(gamma) {
+            this.element.style.transform =
+            "rotateZ(1deg) " +
+            "rotateX(45deg) " +
+            "rotateY(" + (gamma) + "deg) " +
+            "skew(-3deg)";
+        },
+        element: element
+    }
+};
+
+const onChangeHandler = function (snapshot) {
+    let userOrientations = snapshot.val().users;
+    for (var key in userOrientations) {
+        phones[key].rotate(userOrientations[key].gamma);
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const provider = new firebase.auth.GoogleAuthProvider();
-    const user = auth.initiateLogin(provider);
+    const database = firebase.database();
+    auth.initiateLogin(provider, database);
+    user = firebase.auth().currentUser;
 
-    const phoneElements = {};
+    window.addEventListener("deviceorientation", function (event) {
+        if (user === null) {
+            user = firebase.auth().currentUser;
+        }
+        firebase.database().ref('users/' + user.uid).set({
+            gamma: event.gamma,
+            photo: user.photoURL
+        });
+    });
 
-    const initDbListener = function () {
+    const dbChangeHandler = () => {
         firebase.database().ref().on("value", onChangeHandler, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
     }
 
-    const initDbWriter = () => {
-        window.addEventListener("deviceorientation", function (event) {
-            if (user.uid) {
-                firebase.database().ref('users/' + user.uid).set({
-                    gamma: event.gamma,
-                    photo: user.photoURL
-                });
-            }
-        });
-    }
-
     const addPhonesToPage = () => {
         firebase.database().ref('/users').once('value').then(function (snapshot) {
-            let users = snapshot.val();
+            const users = snapshot.val();
             for (var key in users) {
-                let newDiv = document.createElement("div");
-                newDiv.classList.add("phone");
-                newDiv.setAttribute("id", key);
-                document.body.appendChild(newDiv);
-                phoneElements[key] = newDiv;
+                if (!users.hasOwnProperty(key)) continue;
+                let newPhone = createPhoneElement(key);
+                document.body.appendChild(newPhone);
+                phones[key] = createPhone(newPhone);
             }
-            initDbListener();
+
+            dbChangeHandler();
         });
-    }
-
-    const phone = (element) => {
-        return {
-            rotate: function(gamma) {
-                this.element.style.transform =
-                "rotateZ(1deg) " +
-                "rotateX(45deg) " +
-                "rotateY(" + (gamma) + "deg) " +
-                "skew(-3deg)";
-            },
-            element: element
-        }
-    };
-
-    const onChangeHanlder = function (snapshot) {
-        let userOrientations = snapshot.val().users;
-        for (var key in userOrientations) {
-            let newDiv = createPhone();
-            // document.body.appendChild(newDiv);
-            // phoneElements[key] = newDiv;
-        }
     }
 
     addPhonesToPage();
-    initDbWriter();
 });
 
-const createPhone = function(key) {
-    let newDiv = document.createElement("div");
-    newDiv.classList.add("phone");
-    newDiv.setAttribute("id", key);
-    return phone(newDiv);
-}
-
-export default createPhone;
+export default {createPhoneElement, createPhone};

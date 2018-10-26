@@ -1,8 +1,8 @@
 export default {
-    initiateLogin: function(provider) {
+    initiateLogin: function(provider, database) {
         firebase.auth().getRedirectResult().then(function (result) {
             if (result.credential) {
-                database.ref('users/' + window.fbuser.uid).set({
+                database.ref('users/' + result.user.uid).set({
                     gamma: 0,
                     photo: result.user.photoURL
                 });

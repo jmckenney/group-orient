@@ -5,12 +5,18 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
+    "@babel/core": "*",
+    "@babel/preset-env": "*",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "*",
+    "babel-plugin-dynamic-import-node": "^2.2.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "jest": "^23.6.0",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --watchAll",
     "build": "webpack --config webpack.config.js"
   },
   "repository": {
