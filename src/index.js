@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const dbChangeHandler = () => {
-        firebase.database().ref().on("value", onChangeHandler, function (errorObject) {
+        firebase.database().ref().on("child_added", onChangeHandler, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
         });
     }
