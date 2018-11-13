@@ -5,25 +5,27 @@ describe("#addPhonesToPage", () => {
     let josh;
     let brian;
     let spy;
+    let firebase;
+    let database;
+    let auth;
+    let afterPhonesAddedToPage;
 
     beforeEach(() => {
-        // MOCK FIREBASE??
-        // users?
         josh = {};
         brian = {};
 
-        users = [josh, brian];
-        spy = spyOn(document.body, "appendChild");
+        users = {
+            josh: josh, 
+            brian: brian
+        };
+        jest.spyOn(document.body, "appendChild");
+        afterPhonesAddedToPage = jest.fn();
+        document.body.appendChild.mockClear();
     });
 
     it("Adds Elements to document", () => {
-        App.addPhonesToPage(users);
-
-        users.forEach(() => {
-            expect(spy).toHaveBeenCalled();
-        });
-        
-        // for each users
-        // expect document.body.appendChild() to have been called with user
+        App.addPhonesToPage(users, afterPhonesAddedToPage);
+        expect(document.body.appendChild).toHaveBeenCalledTimes(2);
+        expect(afterPhonesAddedToPage).toHaveBeenCalled();
     });
 });

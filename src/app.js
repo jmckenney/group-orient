@@ -15,6 +15,7 @@ const onChangeHandler = function (snapshot) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('firebase.auth: ', firebase.auth);
     const provider = new firebase.auth.GoogleAuthProvider();
     const database = firebase.database();
     auth.initiateLogin(provider, database);
@@ -42,23 +43,21 @@ const dbChangeHandler = () => {
 
 
 
-const onLoad = (fn) => {
+const onLoad = (addPhonesToPage) => {
     firebase.database().ref('/users').once('value')
         .then(function (snapshot) {
         const users = snapshot.val();
-        fn(users);
+        addPhonesToPage(users, dbChangeHandler);
     });
 }
 
-const addPhonesToPage = (users) => {
+const addPhonesToPage = (users, afterPhonesAddedToPage) => {
     for (var key in users) {
-        if (!users.hasOwnProperty(key)) continue;
         let newPhone = Phone.createPhoneElement(key);
         document.body.appendChild(newPhone);
         phones[key] = Phone.createPhone(newPhone);
     }
-
-    dbChangeHandler();
+    afterPhonesAddedToPage();
 }
 
 App.addPhonesToPage = addPhonesToPage;
